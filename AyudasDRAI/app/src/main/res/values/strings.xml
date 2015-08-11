@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">AyudasDRAI</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="nombre">Nombre: </string>
+    <string name="solicitud">Solicitud: </string>
+    <string name="bloque">Bloque: </string>
+    <string name="aula">Aula: </string>
+    <string name="descripcion">Descripción: </string>
+    <string name="enviar">Enviar Reporte</string>
+    <string-array name="solicitudes">
+        <item>Abrir Aula</item>
+        <item>Cerrar Aula</item>
+        <item>Reparar Video Bean</item>
+        <item>Reparar Sonido</item>
+        <item>Cambiar Aula</item>
+        <item>Prestamos Aula</item>
+        <item>Otra Solicitud</item>
+    </string-array>
+</resources>
