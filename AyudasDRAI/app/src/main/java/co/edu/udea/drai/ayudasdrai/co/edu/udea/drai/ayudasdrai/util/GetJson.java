@@ -1,55 +1,74 @@
 package co.edu.udea.drai.ayudasdrai.co.edu.udea.drai.ayudasdrai.util;
-        import java.io.BufferedReader;
-        import java.io.IOException;
-        import java.io.InputStream;
-        import java.io.InputStreamReader;
-        import org.apache.http.HttpEntity;
-        import org.apache.http.HttpResponse;
-        import org.apache.http.StatusLine;
-        import org.apache.http.client.ClientProtocolException;
-        import org.apache.http.client.HttpClient;
-        import org.apache.http.client.methods.HttpGet;
-        import org.apache.http.impl.client.DefaultHttpClient;
+import android.util.Log;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-        import android.util.Log;
 /**
- * Clase encargada de leer el texto JSON a traves del metodo GET  y retornarlo en un String.
+ * Clase encargada de leer el texto JSON en una direccion y retornarlo en un String.
  * @author Heinner Esteban Alvarez <exteban34@gmail.com>
- * @version 1.0 23/02/2015
+ * @version 1.0 07/09/2015
  *
  */
-public class GetJson {
+public class GetJson{
     /**
      *
-     * @param URL
-     * @return String con el objeto JSON
+     * @param urlservice  url de acceso al servicio
+     * @return String que contiene el objeto JSON
      */
-    public static String leerJSON(String URL) {
-        StringBuilder stringBuilder = new StringBuilder();
-        HttpClient client = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(URL);
+    public static String getJson(String urlservice) {
+
+
+        URL url;
+        HttpURLConnection urlConnection = null;
+        String response=":v";
+
+
         try {
-            HttpResponse response = client.execute(httpGet);
-            StatusLine statusLine = response.getStatusLine();
-            int statusCode = statusLine.getStatusCode();
-            if (statusCode == 200) {
-                HttpEntity entity = response.getEntity();
-                InputStream content = entity.getContent();
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(content));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    stringBuilder.append(line);
-                }
-            } else {
-                Log.e("JSON", "Failed to download file");
+            url = new URL(urlservice);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            int responseCode = urlConnection.getResponseCode();
+            if(responseCode == 200){
+                String responseString = readStream(urlConnection.getInputStream());
+                Log.v("CatalogClient", responseString);
+                response = responseString;
+            }else{
+                Log.v("CatalogClient", "Response code:"+ responseCode);
             }
-        } catch (ClientProtocolException e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if(urlConnection != null)
+                urlConnection.disconnect();
+        }
+
+        return response;
+
+    }
+    private static String readStream(InputStream in) {
+        BufferedReader reader = null;
+        StringBuffer response = new StringBuffer();
+        try {
+            reader = new BufferedReader(new InputStreamReader(in));
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        return stringBuilder.toString();
+        return response.toString();
     }
-
 }

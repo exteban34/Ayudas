@@ -42,8 +42,14 @@ public class ReportarActivity extends ActionBarActivity {
     }
     public void reportar(View view) throws JSONException {
 
-       Log.i("",contruirJSON().toString());
-       Toast.makeText(this,contruirJSON().toString(),Toast.LENGTH_LONG).show();
+        if(algunCampoNulo()){
+            Toast.makeText(this,"Alguno de los campos se encuentra vacio." +
+                    "\n Por favor verifica la informacion y vuelve a intentarlo",Toast.LENGTH_LONG).show();
+        }else {
+            Log.i("", contruirJSON().toString());
+            Toast.makeText(this,contruirJSON().toString(),Toast.LENGTH_LONG).show();
+        }
+
 
 
     };
@@ -56,32 +62,27 @@ public class ReportarActivity extends ActionBarActivity {
         tipojson.put("idTipo",(spSolicitud.getSelectedItemPosition()+1));
         reportejson.put("tipo",tipojson);
         reportejson.put("bloque",edBloque.getText().toString());
-        reportejson.put("aula",edAula.getText().toString());
-        reportejson.put("descripcion",edDescripcion.getText().toString());
-
+        reportejson.put("aula", edAula.getText().toString());
+        reportejson.put("descripcion", edDescripcion.getText().toString());
     return reportejson;
     }
 
+    public boolean esNulo(EditText edt){
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_reportar, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if(edt.getText()==null || edt.getText().toString().equals("")){
             return true;
         }
-
-        return super.onOptionsItemSelected(item);
+        return false;
     }
+
+    public boolean algunCampoNulo(){
+
+        if(esNulo(edNombre)|| esNulo(edBloque) || esNulo(edAula)){
+            return true;
+        }
+        return false;
+    };
+
+
+
 }
