@@ -28,11 +28,15 @@ import co.edu.udea.drai.ayudasdrai.co.edu.udea.drai.ayudasdrai.util.GetJson;
 
 public class ReportarActivity extends ActionBarActivity {
 
+    /**
+     * Objetos asociados a la vista
+     */
     Spinner spSolicitud;
     EditText edNombre;
     EditText edBloque;
     EditText edAula;
     EditText edDescripcion;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,20 +52,27 @@ public class ReportarActivity extends ActionBarActivity {
         spSolicitud.setAdapter(adapter);
 
     }
+
+    /**
+     * Evento click asociado al boton de "ENVIAR REPORTE",
+     * verifica la correctitud de los datos y ejecuta la tarea asincrona con el evento POST
+     * @throws JSONException
+     * @throws IOException
+     */
     public void reportar(View view) throws JSONException, IOException {
 
         if(algunCampoNulo()){
-            Toast.makeText(this,"Alguno de los campos se encuentra vacio." +
-                    "\n Por favor verifica la informacion y vuelve a intentarlo",Toast.LENGTH_LONG).show();
+            Toast.makeText(this,R.string.error_campo_nulo,Toast.LENGTH_LONG).show();
+
         }else {
-            /*Log.i("", construirJSON().toString());
-            Toast.makeText(this,construirJSON().toString(),Toast.LENGTH_LONG).show();*/
+            Log.i("Objeto JSON enviado", construirJSON().toString());
            new SendPost().execute("http://172.21.37.158:8084/AyudasDRAI/rest/Reporte");
         }
+        limpiarCampos();
 
 
 
-    };
+    }
 
     public JSONObject construirJSON() throws JSONException {
         JSONObject tipojson=new JSONObject();
@@ -90,6 +101,14 @@ public class ReportarActivity extends ActionBarActivity {
             return true;
         }
         return false;
+    }
+
+    public void limpiarCampos(){
+        edNombre.setText("");
+        edAula.setText("");
+        edBloque.setText("");
+        edDescripcion.setText("");
+
     }
 
     public void verAdmins(View view){
@@ -156,9 +175,9 @@ public class ReportarActivity extends ActionBarActivity {
                 os.flush();
 
                 //do somehting with response
-                InputStream is = conn.getInputStream();
+                /*InputStream is = conn.getInputStream();
                 result = is.toString();
-                Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();*/
 
                 //String contentAsString = readIt(is,len);
             } catch (MalformedURLException e) {

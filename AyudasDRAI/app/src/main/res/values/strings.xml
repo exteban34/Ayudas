@@ -11,6 +11,11 @@
     <string name="aula">Aula: </string>
     <string name="descripcion">Descripción: </string>
     <string name="enviar">Enviar Reporte</string>
+    <string name="error_campo_nulo">Alguno de los campos se encuentra vacio.
+        \n Por favor verifica la informacion y vuelve a intentarlo</string>
+    <string name="base_url">http://172.21.37.158:8084/AyudasDRAI/rest</string>
+    <string name="reporte_rest">/Reporte</string>
+    <string name="admin_rest">/Admin</string>
     <string-array name="solicitudes">
         <item>Abrir Aula</item>
         <item>Cerrar Aula</item>
