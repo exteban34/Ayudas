@@ -1,21 +1,29 @@
 package co.edu.udea.drai.ayudasdrai;
 
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+
+import co.edu.udea.drai.ayudasdrai.co.edu.udea.drai.ayudasdrai.util.GetJson;
 
 
 public class ReportarActivity extends ActionBarActivity {
@@ -40,21 +48,22 @@ public class ReportarActivity extends ActionBarActivity {
         spSolicitud.setAdapter(adapter);
 
     }
-    public void reportar(View view) throws JSONException {
+    public void reportar(View view) throws JSONException, IOException {
 
         if(algunCampoNulo()){
             Toast.makeText(this,"Alguno de los campos se encuentra vacio." +
                     "\n Por favor verifica la informacion y vuelve a intentarlo",Toast.LENGTH_LONG).show();
         }else {
-            Log.i("", contruirJSON().toString());
-            Toast.makeText(this,contruirJSON().toString(),Toast.LENGTH_LONG).show();
+            /*Log.i("", construirJSON().toString());
+            Toast.makeText(this,construirJSON().toString(),Toast.LENGTH_LONG).show();*/
+           new SendPost().execute("http://172.21.37.158:8084/AyudasDRAI/rest/Reporte");
         }
 
 
 
     };
 
-    public JSONObject contruirJSON() throws JSONException {
+    public JSONObject construirJSON() throws JSONException {
         JSONObject tipojson=new JSONObject();
         JSONObject reportejson = new JSONObject();
         reportejson.put("usuario",edNombre.getText().toString());
@@ -81,7 +90,96 @@ public class ReportarActivity extends ActionBarActivity {
             return true;
         }
         return false;
-    };
+    }
+
+    public void verAdmins(View view){
+        new LeerAdmins().execute("http://172.21.37.158:8084/AyudasDRAI/rest/Admin");
+    }
+
+    private class LeerAdmins extends AsyncTask<String, Void, String> {
+
+
+        protected String doInBackground(String... urls) {
+            return GetJson.getJson(urls[0]);
+        }
+
+        protected void onPostExecute(String result) {
+            try {
+
+                Log.i("RESULT", result);
+                JSONArray admins = new JSONArray(result);
+
+                for (int i = 0; i < admins.length(); i++) {
+                    JSONObject adminJson = admins.getJSONObject(i);
+                    Toast.makeText(getApplicationContext(),adminJson.getString("nombreAdministrador")+" , "+
+                            adminJson.getString("correoAdministrador"),Toast.LENGTH_LONG).show();
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(),"Ocurre algun problema al consultar los datos."
+                        +"\n Por favor verifica tu conexion a internet e intentalo nuevamente",Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private class SendPost extends AsyncTask<String, Void, Void> {
+
+
+        protected Void doInBackground(String... urls) {
+            //can catch a variety of wonderful things
+            String result = null;
+            try {
+                //constants
+                result = " ";
+                URL url = new URL("http://172.21.37.158:8084/AyudasDRAI/rest/Reporte");
+                String message = construirJSON().toString();
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000 /*milliseconds*/);
+                conn.setConnectTimeout(15000 /* milliseconds */);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.setFixedLengthStreamingMode(message.getBytes().length);
+
+                //make some HTTP header nicety
+                conn.setRequestProperty("Content-Type", "application/json;charset=utf-8");
+                conn.setRequestProperty("X-Requested-With", "XMLHttpRequest");
+
+                //open
+                conn.connect();
+
+                //setup send
+                OutputStream os = new BufferedOutputStream(conn.getOutputStream());
+                os.write(message.getBytes());
+                //clean up
+                os.flush();
+
+                //do somehting with response
+                InputStream is = conn.getInputStream();
+                result = is.toString();
+                Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();
+
+                //String contentAsString = readIt(is,len);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } finally {
+                //clean up
+                //os.close();
+                //is.close();
+                //conn.disconnect();
+            }
+
+
+            return null;
+        }
+    }
 
 
 
