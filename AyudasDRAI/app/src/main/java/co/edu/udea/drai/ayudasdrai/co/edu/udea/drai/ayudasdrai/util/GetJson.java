@@ -49,6 +49,7 @@ public class GetJson{
         return response;
 
     }
+
     private static String readStream(InputStream in) {
         BufferedReader reader = null;
         StringBuffer response = new StringBuffer();

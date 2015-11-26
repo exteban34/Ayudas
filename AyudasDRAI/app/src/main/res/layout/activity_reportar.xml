@@ -77,14 +77,11 @@
             android:text="@string/bloque"
             android:id="@+id/textView3" />
 
-        <EditText
-            style="@style/TextViewStyle"
+        <Spinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:ems="10"
-            android:id="@+id/editTextBloque"
-            android:maxLength="2" />
+            android:id="@+id/spinnerBloque" />
+
     </TableRow>
 
     <TableRow

@@ -1,7 +1,7 @@
 package co.edu.udea.drai.ayudasdrai;
 
+import android.app.Activity;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +16,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -25,15 +24,21 @@ import java.net.URL;
 
 import co.edu.udea.drai.ayudasdrai.co.edu.udea.drai.ayudasdrai.util.GetJson;
 
-
-public class ReportarActivity extends ActionBarActivity {
+/**
+ * Clase Encargada de exponer el formato para realizar la solicitud y enviar la solicitud a traves
+ * del metodo POST expuesto en el servicio del Back End AyudasDRAI.
+ * @author Heinner Esteban Alvarez <exteban34@gmail.com>
+ * @version 1.0 23/11/2015
+ *
+ */
+public class ReportarActivity extends Activity{
 
     /**
      * Objetos asociados a la vista
      */
     Spinner spSolicitud;
+    Spinner spBloque;
     EditText edNombre;
-    EditText edBloque;
     EditText edAula;
     EditText edDescripcion;
 
@@ -42,7 +47,7 @@ public class ReportarActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reportar);
         edNombre = (EditText) findViewById(R.id.editTextNombre);
-        edBloque = (EditText) findViewById(R.id.editTextBloque);
+
         edAula = (EditText) findViewById(R.id.editTextAula);
         edDescripcion = (EditText) findViewById(R.id.editTextDescripcion);
         spSolicitud= (Spinner) findViewById(R.id.spinnerSolicitud);
@@ -50,6 +55,12 @@ public class ReportarActivity extends ActionBarActivity {
                 R.array.solicitudes, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spSolicitud.setAdapter(adapter);
+        spBloque= (Spinner) findViewById(R.id.spinnerBloque);
+        ArrayAdapter<CharSequence> adapterbloques = ArrayAdapter.createFromResource(this,
+                R.array.bloques, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spBloque.setAdapter(adapterbloques);
+
 
     }
 
@@ -65,7 +76,7 @@ public class ReportarActivity extends ActionBarActivity {
             Toast.makeText(this,R.string.error_campo_nulo,Toast.LENGTH_LONG).show();
 
         }else {
-            Log.i("Objeto JSON enviado", construirJSON().toString());
+           Log.i("Objeto JSON enviado", construirJSON().toString());
            new SendPost().execute("http://172.21.37.158:8084/AyudasDRAI/rest/Reporte");
         }
         limpiarCampos();
@@ -74,6 +85,12 @@ public class ReportarActivity extends ActionBarActivity {
 
     }
 
+    /**
+     * Metodo encargado de construir un objeto JSON a partir de los datos ingresados en
+     * el formulario.
+     * @return JSONObject con los datos en formato JSON.
+     * @throws JSONException
+     */
     public JSONObject construirJSON() throws JSONException {
         JSONObject tipojson=new JSONObject();
         JSONObject reportejson = new JSONObject();
@@ -81,12 +98,17 @@ public class ReportarActivity extends ActionBarActivity {
         reportejson.put("correoUsuario","correo@correo.com");
         tipojson.put("idTipo",(spSolicitud.getSelectedItemPosition()+1));
         reportejson.put("tipo",tipojson);
-        reportejson.put("bloque",edBloque.getText().toString());
+        reportejson.put("bloque",spBloque.getSelectedItem().toString());
         reportejson.put("aula", edAula.getText().toString());
         reportejson.put("descripcion", edDescripcion.getText().toString());
     return reportejson;
     }
 
+    /**
+     * Metodo que verifica si un campo de texto se encunetra nulo o sin informacion.
+     * @param edt campo de texto a evaluar nulidad.
+     * @return
+     */
     public boolean esNulo(EditText edt){
 
         if(edt.getText()==null || edt.getText().toString().equals("")){
@@ -95,26 +117,41 @@ public class ReportarActivity extends ActionBarActivity {
         return false;
     }
 
+    /**
+     * Metodo que verifica la existencia de informacion en los campos obligatorios del formulario.
+     * @return
+     */
     public boolean algunCampoNulo(){
-
-        if(esNulo(edNombre)|| esNulo(edBloque) || esNulo(edAula)){
+            if(esNulo(edNombre)|| esNulo(edAula)){
             return true;
         }
         return false;
     }
 
+    /**
+     * Metodo encargado de limpiar los datos del formulario.
+     */
     public void limpiarCampos(){
         edNombre.setText("");
         edAula.setText("");
-        edBloque.setText("");
         edDescripcion.setText("");
 
     }
 
+    /**
+     * Evento asociado al boton ver administradores.
+     * @param view
+     */
     public void verAdmins(View view){
-        new LeerAdmins().execute("http://172.21.37.158:8084/AyudasDRAI/rest/Admin");
+        new LeerAdmins().execute(getResources().getString(R.string.base_url)
+                +getResources().getString(R.string.admin_rest));
     }
 
+    /**
+     * Clase Asincrona encargada de consultar el arreglo JSON  con los administradores
+     * @author Heinner Esteban Alvarez <exteban34@gmail.com>
+     * @version 1.0 24/11/2015
+     */
     private class LeerAdmins extends AsyncTask<String, Void, String> {
 
 
@@ -136,22 +173,26 @@ public class ReportarActivity extends ActionBarActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(getApplicationContext(),"Ocurre algun problema al consultar los datos."
-                        +"\n Por favor verifica tu conexion a internet e intentalo nuevamente",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),R.string.error_conexion,Toast.LENGTH_LONG).show();
             }
         }
     }
 
+    /**
+     * Clase Asincrona encargada de enviar el objeto en formato JSON a traves
+     * del metodo POST expuesto en el servicio del Back End
+     * @author Heinner Esteban Alvarez <exteban34@gmail.com>
+     * @version 1.0 25/11/2015
+     */
     private class SendPost extends AsyncTask<String, Void, Void> {
-
-
         protected Void doInBackground(String... urls) {
             //can catch a variety of wonderful things
             String result = null;
             try {
                 //constants
                 result = " ";
-                URL url = new URL("http://172.21.37.158:8084/AyudasDRAI/rest/Reporte");
+                URL url = new URL(getResources().getString(R.string.base_url)
+                        +getResources().getString(R.string.reporte_rest));
                 String message = construirJSON().toString();
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000 /*milliseconds*/);
@@ -188,7 +229,11 @@ public class ReportarActivity extends ActionBarActivity {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
-            } finally {
+            } catch (RuntimeException e){
+                e.printStackTrace();
+
+            }
+            finally {
                 //clean up
                 //os.close();
                 //is.close();

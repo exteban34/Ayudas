@@ -11,14 +11,30 @@
     <string name="aula">Aula: </string>
     <string name="descripcion">Descripción: </string>
     <string name="enviar">Enviar Reporte</string>
-    <string name="error_campo_nulo">Alguno de los campos se encuentra vacio.
-        \n Por favor verifica la informacion y vuelve a intentarlo</string>
+
     <string name="base_url">http://172.21.37.158:8084/AyudasDRAI/rest</string>
     <string name="reporte_rest">/Reporte</string>
     <string name="admin_rest">/Admin</string>
+
+    <string name="error_campo_nulo">Alguno de los campos se encuentra vacio.
+        \n Por favor verifica la informacion y vuelve a intentarlo</string>
+    <string name="error_conexion">Ocurre un problema al conectarse con la red
+        \n o esta conexion es demasiado lenta.
+        \n Por favor verifica tu conexion a internet e intentalo nuevamente</string>
+    <string name="error_tiempo_tarea">La tarea esta tardando mas de lo adecuado.
+        \n Por favor verifica tu conexion a internet e intentalo nuevamente</string>
+
     <string-array name="solicitudes">
         <item>Abrir Aula</item>
         <item>Cerrar Aula</item>
         <item>Soporte</item>
     </string-array>
+
+    <string-array name="bloques">
+        <item>10</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+    </string-array>
+
 </resources>
