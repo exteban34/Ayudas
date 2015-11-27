@@ -15,12 +15,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Arrays;
 
 import co.edu.udea.drai.ayudasdrai.co.edu.udea.drai.ayudasdrai.util.GetJson;
 
@@ -71,18 +74,15 @@ public class ReportarActivity extends Activity{
      * @throws IOException
      */
     public void reportar(View view) throws JSONException, IOException {
-
-        if(algunCampoNulo()){
+       if(algunCampoNulo()){
             Toast.makeText(this,R.string.error_campo_nulo,Toast.LENGTH_LONG).show();
-
-        }else {
-           Log.i("Objeto JSON enviado", construirJSON().toString());
-           new SendPost().execute("http://172.21.37.158:8084/AyudasDRAI/rest/Reporte");
-        }
-        limpiarCampos();
-
-
-
+        }else if (!aulaValida()){
+           Toast.makeText(this,R.string.error_aula_invalida,Toast.LENGTH_LONG).show();
+           }else {
+                Log.i("Objeto JSON enviado", construirJSON().toString());
+                new SendPost().execute("http://172.21.37.158:8084/AyudasDRAI/rest/Reporte");
+                limpiarCampos();
+           }
     }
 
     /**
@@ -138,6 +138,17 @@ public class ReportarActivity extends Activity{
 
     }
 
+    public boolean aulaValida(){
+        boolean valida=false;
+        String[] aulasValidas;
+        String aula=spBloque.getSelectedItem().toString() +"-"+ edAula.getText().toString();
+        aulasValidas= getResources().getStringArray(R.array.aulas_validas);
+        if(Arrays.asList(aulasValidas).contains(aula)){
+                valida = true;
+        }
+        return valida;
+    }
+
     /**
      * Evento asociado al boton ver administradores.
      * @param view
@@ -184,13 +195,12 @@ public class ReportarActivity extends Activity{
      * @author Heinner Esteban Alvarez <exteban34@gmail.com>
      * @version 1.0 25/11/2015
      */
-    private class SendPost extends AsyncTask<String, Void, Void> {
-        protected Void doInBackground(String... urls) {
+    private class SendPost extends AsyncTask<String, Void, String> {
+        protected String doInBackground(String... urls) {
             //can catch a variety of wonderful things
-            String result = null;
+            String line = " :v ";
             try {
                 //constants
-                result = " ";
                 URL url = new URL(getResources().getString(R.string.base_url)
                         +getResources().getString(R.string.reporte_rest));
                 String message = construirJSON().toString();
@@ -216,11 +226,27 @@ public class ReportarActivity extends Activity{
                 os.flush();
 
                 //do somehting with response
-                /*InputStream is = conn.getInputStream();
+                /*InputStream is = new Bu
                 result = is.toString();
                 Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();*/
+                BufferedReader reader = new BufferedReader(new
+                        InputStreamReader(conn.getInputStream()));
+                while ((line = reader.readLine()) != null) {
+                    if(line.equals("Se ha almacenado el reporte exitosamente")){
+                        os.close();
+                        reader.close();
+                        conn.disconnect();
+                        Log.i("Input POST", line);
+                        return line;
+                    }else {
+                        os.close();
+                        reader.close();
+                        conn.disconnect();
+                        Log.i("Input POST", line);
+                        return line;
+                    }
+                }
 
-                //String contentAsString = readIt(is,len);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (ProtocolException e) {
@@ -231,18 +257,19 @@ public class ReportarActivity extends Activity{
                 e.printStackTrace();
             } catch (RuntimeException e){
                 e.printStackTrace();
-
-            }
-            finally {
-                //clean up
-                //os.close();
-                //is.close();
-                //conn.disconnect();
             }
 
-
-            return null;
+            return line;
         }
+        protected void onPostExecute(String result) {
+            //Log.i("RESULT", result);
+            /*if(result.equals("Se ha almacenado el reporte exitosamente")){
+                Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();
+                }else{
+                    Toast.makeText(getApplicationContext(),R.string.error_tiempo_tarea,Toast.LENGTH_LONG).show();
+                }*/
+            }
+
     }
 
 
