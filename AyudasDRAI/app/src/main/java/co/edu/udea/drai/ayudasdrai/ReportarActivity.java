@@ -138,6 +138,11 @@ public class ReportarActivity extends Activity{
 
     }
 
+    /**
+     * Metodo encargado de comprobar si el aula y el bloque especificados
+     * son validos en la logica de negocio.
+     * @return
+     */
     public boolean aulaValida(){
         boolean valida=false;
         String[] aulasValidas;
@@ -150,52 +155,14 @@ public class ReportarActivity extends Activity{
     }
 
     /**
-     * Evento asociado al boton ver administradores.
-     * @param view
-     */
-    public void verAdmins(View view){
-        new LeerAdmins().execute(getResources().getString(R.string.base_url)
-                +getResources().getString(R.string.admin_rest));
-    }
-
-    /**
-     * Clase Asincrona encargada de consultar el arreglo JSON  con los administradores
-     * @author Heinner Esteban Alvarez <exteban34@gmail.com>
-     * @version 1.0 24/11/2015
-     */
-    private class LeerAdmins extends AsyncTask<String, Void, String> {
-
-
-        protected String doInBackground(String... urls) {
-            return GetJson.getJson(urls[0]);
-        }
-
-        protected void onPostExecute(String result) {
-            try {
-
-                Log.i("RESULT", result);
-                JSONArray admins = new JSONArray(result);
-
-                for (int i = 0; i < admins.length(); i++) {
-                    JSONObject adminJson = admins.getJSONObject(i);
-                    Toast.makeText(getApplicationContext(),adminJson.getString("nombreAdministrador")+" , "+
-                            adminJson.getString("correoAdministrador"),Toast.LENGTH_LONG).show();
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Toast.makeText(getApplicationContext(),R.string.error_conexion,Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    /**
      * Clase Asincrona encargada de enviar el objeto en formato JSON a traves
      * del metodo POST expuesto en el servicio del Back End
      * @author Heinner Esteban Alvarez <exteban34@gmail.com>
      * @version 1.0 25/11/2015
      */
     private class SendPost extends AsyncTask<String, Void, String> {
+        private String mensaje= ":v";
+
         protected String doInBackground(String... urls) {
             //can catch a variety of wonderful things
             String line = " :v ";
@@ -232,19 +199,12 @@ public class ReportarActivity extends Activity{
                 BufferedReader reader = new BufferedReader(new
                         InputStreamReader(conn.getInputStream()));
                 while ((line = reader.readLine()) != null) {
-                    if(line.equals("Se ha almacenado el reporte exitosamente")){
-                        os.close();
-                        reader.close();
-                        conn.disconnect();
-                        Log.i("Input POST", line);
-                        return line;
-                    }else {
-                        os.close();
-                        reader.close();
-                        conn.disconnect();
-                        Log.i("Input POST", line);
-                        return line;
-                    }
+                    os.close();
+                    reader.close();
+                    conn.disconnect();
+                    Log.i("Input POST", line);
+                    mensaje=line;
+                    return line;
                 }
 
             } catch (MalformedURLException e) {
@@ -262,15 +222,65 @@ public class ReportarActivity extends Activity{
             return line;
         }
         protected void onPostExecute(String result) {
-            //Log.i("RESULT", result);
-            /*if(result.equals("Se ha almacenado el reporte exitosamente")){
-                Toast.makeText(getApplicationContext(),result,Toast.LENGTH_LONG).show();
-                }else{
-                    Toast.makeText(getApplicationContext(),R.string.error_tiempo_tarea,Toast.LENGTH_LONG).show();
-                }*/
+            mostrarMensaje(mensaje);
+        }
+
+        public void mostrarMensaje(String message){
+
+            if(message.equals("Se ha almacenado el reporte exitosamente")){
+                Toast.makeText(getApplicationContext(),message,Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(getApplicationContext(),R.string.error_tiempo_tarea,Toast.LENGTH_LONG).show();
             }
+            mensaje= ":v";
+
+        }
+
 
     }
+
+
+    /**
+     * Evento asociado al boton ver administradores.
+     * @param view
+     */
+   /* public void verAdmins(View view){
+        new LeerAdmins().execute(getResources().getString(R.string.base_url)
+                +getResources().getString(R.string.admin_rest));
+    }
+    */
+    /**
+     * Clase Asincrona encargada de consultar el arreglo JSON  con los administradores
+     * @author Heinner Esteban Alvarez <exteban34@gmail.com>
+     * @version 1.0 24/11/2015
+     */
+   /* private class LeerAdmins extends AsyncTask<String, Void, String> {
+        String mensaje = "";
+
+
+        protected String doInBackground(String... urls) {
+            return GetJson.getJson(urls[0]);
+        }
+
+        protected void onPostExecute(String result) {
+            try {
+
+                Log.i("RESULT", result);
+                JSONArray admins = new JSONArray(result);
+
+                for (int i = 0; i < admins.length(); i++) {
+                    JSONObject adminJson = admins.getJSONObject(i);
+                    Toast.makeText(getApplicationContext(),adminJson.getString("nombreAdministrador")+" , "+
+                            adminJson.getString("correoAdministrador"),Toast.LENGTH_LONG).show();
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(),R.string.error_conexion,Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+    */
 
 
 

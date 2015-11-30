@@ -169,6 +169,9 @@
             android:layout_height="wrap_content"
             android:text="ver admins"
             android:onClick="verAdmins"
-            android:id="@+id/buttonAdmin" />
+            android:id="@+id/buttonAdmin"
+            android:enabled="false"
+            android:focusable="false"
+            android:visibility="invisible" />
     </TableRow>
 </LinearLayout>

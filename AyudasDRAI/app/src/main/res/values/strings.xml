@@ -24,7 +24,7 @@
     <string name="error_tiempo_tarea">La tarea esta tardando mas de lo adecuado.
         \n Por favor verifica tu conexion a internet e intentalo nuevamente</string>
      <string name="error_aula_invalida">El aula que se ha espedificado no corresponde al bloque indicado.
-        \n Por favor verifica la informacion y vuelve a intentarlo</string>
+        </string>
 
     <string-array name="solicitudes">
         <item>Abrir Aula</item>
