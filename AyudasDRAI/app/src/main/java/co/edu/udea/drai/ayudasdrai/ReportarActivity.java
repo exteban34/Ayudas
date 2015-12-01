@@ -1,8 +1,10 @@
 package co.edu.udea.drai.ayudasdrai;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -34,7 +36,7 @@ import co.edu.udea.drai.ayudasdrai.co.edu.udea.drai.ayudasdrai.util.GetJson;
  * @version 1.0 23/11/2015
  *
  */
-public class ReportarActivity extends Activity{
+public class ReportarActivity extends AppCompatActivity{
 
     /**
      * Objetos asociados a la vista
@@ -44,6 +46,7 @@ public class ReportarActivity extends Activity{
     EditText edNombre;
     EditText edAula;
     EditText edDescripcion;
+    ProgressDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,9 +83,9 @@ public class ReportarActivity extends Activity{
            Toast.makeText(this,R.string.error_aula_invalida,Toast.LENGTH_LONG).show();
            }else {
                 Log.i("Objeto JSON enviado", construirJSON().toString());
-                new SendPost().execute("http://172.21.37.158:8084/AyudasDRAI/rest/Reporte");
-                limpiarCampos();
-           }
+                new SendPost().execute(getResources().getString(R.string.base_url)
+                        +getResources().getString(R.string.reporte_rest));
+                }
     }
 
     /**
@@ -163,6 +166,14 @@ public class ReportarActivity extends Activity{
     private class SendPost extends AsyncTask<String, Void, String> {
         private String mensaje= ":v";
 
+        protected void onPreExecute() {
+            pDialog = new ProgressDialog(ReportarActivity.this);
+            pDialog.setMessage(getString(R.string.enviando_solicitud));
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
         protected String doInBackground(String... urls) {
             //can catch a variety of wonderful things
             String line = " :v ";
@@ -171,6 +182,7 @@ public class ReportarActivity extends Activity{
                 URL url = new URL(getResources().getString(R.string.base_url)
                         +getResources().getString(R.string.reporte_rest));
                 String message = construirJSON().toString();
+                Log.i("Objeto antes de enviar", message);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000 /*milliseconds*/);
                 conn.setConnectTimeout(15000 /* milliseconds */);
@@ -227,12 +239,15 @@ public class ReportarActivity extends Activity{
 
         public void mostrarMensaje(String message){
 
+            pDialog.dismiss();
             if(message.equals("Se ha almacenado el reporte exitosamente")){
                 Toast.makeText(getApplicationContext(),message,Toast.LENGTH_LONG).show();
+
             }else{
                 Toast.makeText(getApplicationContext(),R.string.error_tiempo_tarea,Toast.LENGTH_LONG).show();
             }
             mensaje= ":v";
+            limpiarCampos();
 
         }
 

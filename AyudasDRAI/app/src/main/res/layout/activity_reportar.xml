@@ -39,7 +39,8 @@
             android:layout_column="1"
             android:lines="1"
             android:maxLength="50"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:hint="@string/nombre_hint" />
     </TableRow>
 
     <TableRow
@@ -106,7 +107,8 @@
             android:ems="10"
             android:id="@+id/editTextAula"
             android:layout_column="1"
-            android:maxLength="3" />
+            android:maxLength="3"
+            android:hint="@string/aula_hint" />
     </TableRow>
 
     <TableRow
@@ -130,7 +132,8 @@
             android:id="@+id/editTextDescripcion"
             android:layout_column="1"
             android:maxLength="140"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:hint="@string/descripcion_hint" />
     </TableRow>
 
     <TableRow

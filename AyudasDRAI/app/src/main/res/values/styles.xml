@@ -2,8 +2,10 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+
+        <item name="colorPrimary">#016938</item>
         <item name="android:textSize" >17dp</item>
-               <item name="android:textStyle" >italic</item>
+        <item name="android:textStyle" >italic</item>
         <item name="android:layout_width" >match_parent</item>
 
 
@@ -15,7 +17,7 @@
         <item name="android:textSize" >17dp</item>
         <item name="android:gravity">center</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:background">#00884A</item>
+        <item name="android:background">#016938</item>
         <item name="android:textColor" >#FFFFFF</item>
     </style>
 
